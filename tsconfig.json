@@ -8,6 +8,9 @@
     },
     {
       "path": "./apps/auth-service"
+    },
+    {
+      "path": "./api-gateway"
     }
   ]
 }
