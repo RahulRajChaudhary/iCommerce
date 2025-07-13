@@ -4,10 +4,10 @@
 dist
 tmp
 out-tsc
+.env
 
 # dependencies
 node_modules
-.env
 
 # IDEs and editors
 /.idea

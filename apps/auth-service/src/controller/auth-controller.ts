@@ -22,10 +22,12 @@ export const userRegistration = async(req: Request, res: Response , next:NextFun
     return next( new ValidationError(`User with email ${email} already exists!`));
   }
 
-  await prisma.users.create({
+ await prisma.users.create({
     data: {
       name,
-      email
+      email,
     }
   });
+  
+  res.status(201).json({ message: "User registered successfully" });
 }
