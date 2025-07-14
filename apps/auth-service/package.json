@@ -2,6 +2,7 @@
   "name": "@./auth-service",
   "version": "0.0.1",
   "private": true,
+  
   "nx": {
     "name": "auth-service",
     "targets": {
