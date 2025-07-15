@@ -5,6 +5,7 @@
     "emitDeclarationOnly": true,
     "importHelpers": true,
     "isolatedModules": true,
+    "baseUrl": ".",
     "lib": ["es2022"],
     "module": "nodenext",
     "moduleResolution": "nodenext",
@@ -15,6 +16,10 @@
     "noUnusedLocals": true,
     "skipLibCheck": true,
     "strict": true,
-    "target": "es2022"
+    "target": "es2022",
+    "paths": {
+      "@packages/*": ["packages/*"],
+      "@libs/*": ["libs/*"]
+    }
   }
 }
