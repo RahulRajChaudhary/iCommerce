@@ -3,9 +3,11 @@
 
 import { NextFunction, Request, Response } from "express";
 import { checkOtpRestriction, sendOtp, trackOtpRequests, validateRegistrationData, verifyOtp } from "../utils/auth-helper";
-import { ValidationError } from "../../../../packages/error-handler";
+import { AuthError, ValidationError } from "../../../../packages/error-handler";
 import prisma from "../../../../packages/lib/prisma";
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import { setCookies } from "../utils/cookies";
 
 
 export const userRegistration = async (req: Request, res: Response, next: NextFunction) => {
@@ -68,5 +70,57 @@ export const verifyUser = async (req: Request, res: Response, next: NextFunction
     })
   } catch (error) {
     res.status(500).json({ message: "Something went wrong" });
+  }
+}
+
+
+// login user
+
+export const loginUser = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return next(new ValidationError(`Please provide all the required fields for login`));
+    }
+    const user = await prisma.users.findUnique({
+      where: {
+        email
+      }
+    });
+
+    if (!user) {
+      return next(new AuthError(`User not found!`));
+    }
+    const isMatch = await bcrypt.compare(password, user.password!);
+    if (!isMatch) {
+      return next(new AuthError(`Incorrect password or email!`));
+    }
+
+    // access token and referesh token
+
+    const accessToken = jwt.sign({ id: user.id ,role: "user"}, process.env.ACCESS_JWT_SECRET!, {
+      expiresIn: "15m"
+    });
+    const refereshToken = jwt.sign({ id: user.id ,role: "user"}, process.env.REFRESH_JWT_SECRET!, {
+      expiresIn: "7d"
+    });
+
+    //storing the token and httponly
+
+    setCookies(res, "accessToken", accessToken);
+    setCookies(res, "refereshToken", refereshToken);
+    
+    res.status(200).json({
+      success: true,
+      message: "User logged in successfully",
+      user : {
+        id: user.id,
+        name: user.name,
+        email: user.email
+      }
+    })
+
+  } catch (error) {
+    return next(error);
   }
 }

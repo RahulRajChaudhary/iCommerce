@@ -46,6 +46,7 @@
     "@types/express-http-proxy": "^1.6.6",
     "@types/express-rate-limit": "^5.1.3",
     "@types/jest": "^29.5.12",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/morgan": "^1.9.10",
     "@types/node": "~18.16.9",
     "@types/nodemailer": "^6.4.17",
