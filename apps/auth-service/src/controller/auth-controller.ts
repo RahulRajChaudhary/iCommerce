@@ -2,7 +2,7 @@
 // New user
 
 import { NextFunction, Request, Response } from "express";
-import { checkOtpRestriction, sendOtp, trackOtpRequests, validateRegistrationData, verifyOtp } from "../utils/auth-helper";
+import { checkOtpRestriction, handleForgotPassword, sendOtp, trackOtpRequests, validateRegistrationData, verifyOtp } from "../utils/auth-helper";
 import { AuthError, ValidationError } from "../../../../packages/error-handler";
 import prisma from "../../../../packages/lib/prisma";
 import bcrypt from 'bcryptjs';
@@ -124,3 +124,67 @@ export const loginUser = async (req: Request, res: Response, next: NextFunction)
     return next(error);
   }
 }
+
+// user forgot password
+
+export const userForgotPassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction) => {
+  await handleForgotPassword(req, res, next , "user");
+
+}
+
+// forgot password otp
+
+export const verifyForgotPasswordOtp = async (
+  req: Request,
+  res: Response,
+  next: NextFunction) => {
+  try {
+    await verifyForgotPasswordOtp(req, res, next);
+  } catch (error) {
+    next(error);
+  }
+}
+
+// user reset password
+
+export const resetUserPassword = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { email, newPassword } = req.body;
+    
+    if(!email || !newPassword){
+      return next(new ValidationError(`Please provide all the required fields for reset password`));
+    }
+
+    const user = await prisma.users.findUnique({
+      where: {
+        email
+      }
+    });
+    if(!user){
+      return next(new ValidationError(`User not found!`));
+    }
+    const isSamePassword = await bcrypt.compare(newPassword, user.password!);
+    if(isSamePassword){
+      return next(new ValidationError(`New password should be different from old password`));
+    }
+    const newHashedPassword = await bcrypt.hash(newPassword, 10);
+    await prisma.users.update({
+      where: {
+        email
+      },
+      data: {
+        password: newHashedPassword
+      }
+    });
+    res.status(200).json({
+      success: true,
+      message: "Password reset successfully",
+      user
+    })
+  } catch (error) {
+    next(error);
+  }
+}  
