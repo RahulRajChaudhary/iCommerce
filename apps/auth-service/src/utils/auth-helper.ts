@@ -6,15 +6,21 @@ import redis from '../../../../packages/lib/redis';
 import { sendEmail } from './sendMail';
 import { NextFunction } from 'express';
 
-
-
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 
-export const validateRegistrationData = (data: any , userType: "user" | "seller") => {
+export const validateRegistrationData = (
+  data: any,
+  userType: "user" | "seller"
+) => {
   const { name, email, password, phone_number, country } = data;
   
-  if(!name || !email || !password || (userType === "seller" && (!phone_number ||  !country))) {
+  if (
+    !name ||
+    !email ||
+    !password ||
+    (userType === "seller" && (!phone_number || !country))
+  ) {
     throw new ValidationError(`Please provide all the required fields for registration`);
   }
 
