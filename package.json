@@ -9,6 +9,7 @@
   "private": true,
   "dependencies": {
     "@prisma/client": "^6.11.1",
+    "@tanstack/react-query": "^5.83.0",
     "axios": "^1.10.0",
     "bcryptjs": "^3.0.2",
     "cookie-parser": "^1.4.7",
@@ -20,12 +21,13 @@
     "express-rate-limit": "^7.5.1",
     "ioredis": "^5.6.1",
     "jsonwebtoken": "^9.0.2",
-    "lucide-react": "^0.525.0",
     "morgan": "^1.10.0",
     "next": "~15.1.4",
     "nodemailer": "^7.0.5",
     "react": "18.3.1",
     "react-dom": "18.3.1",
+    "react-hook-form": "^7.60.0",
+    "react-icons": "^5.5.0",
     "swagger-autogen": "^2.23.7",
     "swagger-ui": "^5.26.2"
   },
