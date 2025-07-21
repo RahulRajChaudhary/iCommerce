@@ -39,15 +39,15 @@ const Header = () => {
           <div className='flex items-center gap-5'>
             <Link href={'/wishlist'}
               className='relative'>
-              <CiHeart />
-              <div className='w-5 h-5 bg-red-600 rounded-full flex items-center justify-center absolute top-[-10px] right-[-10px]'>
+              <CiHeart size={30} />
+              <div className='w-5 h-5 bg-red-600 rounded-full flex items-center justify-center absolute top-[-6px] right-[-6px]'>
                 <span className='text-white font-medium text-sm'>0</span>
               </div>
             </Link>
             <Link href={'/cart'}
               className='relative'>
-              <CiShoppingCart />
-              <div className='w-5 h-5 bg-red-600 rounded-full flex items-center justify-center absolute top-[-10px] right-[-10px]'>
+              <CiShoppingCart size={30} />
+              <div className='w-5 h-5 bg-red-600 rounded-full flex items-center justify-center absolute top-[-6px] right-[-6px]'>
                 <span className='text-white font-medium text-sm'>9+</span>
               </div>
             </Link>
