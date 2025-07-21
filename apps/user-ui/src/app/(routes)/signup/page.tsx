@@ -20,7 +20,7 @@ const Signup = () => {
   const [serverError, setServerError] = useState<string | null>(null);
   const [canResend, setCanResend] = useState(true);
   const [timer, setTimer] = useState(60);
-  const [showOtp, setShowOtp] = useState(true);
+  const [showOtp, setShowOtp] = useState(false);
   const [otp, setOtp] = useState(["", "", "", ""]);;
   const [userData, setUserData] = useState<FormData | null>(null);
   const inputRefs = useRef<HTMLInputElement[]>([]);
@@ -53,6 +53,10 @@ const Signup = () => {
       inputRefs.current[index - 1]?.focus();
     }
   };
+
+  const handleResendOtp = () => {
+    
+  }
 
   return (
     <div className='w-full py-10 min-h-[85vh] bg-[#f1f1f1]'>
@@ -157,9 +161,23 @@ const Signup = () => {
                     onKeyDown={(e) => handleOtpKeyDown(index, e)}
                   />
                 ))}
-              </div>
-            </div>
+                </div>
 
+                <button type="submit" className='w-full p-2 bg-[#759bf3] text-white rounded-md hover:bg-[#759bf3] focus:outline-none focus:ring focus:ring-blue-200 mt-4'>
+                  Verify
+                </button>
+                <p className='text-center text-sm font-medium pt-3'>
+                  {canResend ? (
+                    <button
+                      onClick={handleResendOtp} 
+                      className='text-[#759bf3] cursor-pointer'>
+                      Resend OTP
+                    </button>
+                  ) : (
+                    `Resend OTP in ${timer}s` 
+                  )}
+                </p>
+            </div>
           )}
         </div>
       </div>
