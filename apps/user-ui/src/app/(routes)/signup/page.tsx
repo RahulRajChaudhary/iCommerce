@@ -3,21 +3,26 @@
 import GoogleButton from '@/shared/components/google-button';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { VscEyeClosed, VscEye } from 'react-icons/vsc'
 
 
 type FormData = {
+  name: string
   email: string
   password: string
 };
 
-const Login = () => {
+const Signup = () => {
 
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
-  const [rememberMe, setRememberMe] = useState(false);
+  const [canResend, setCanResend] = useState(true);
+  const [timer, setTimer] = useState(60);
+  const [otp, setOtp] = useState('');
+  const [userData, setUserData] = useState<FormData | null>(null);
+  const inputRefs = useRef<HTMLInputElement[]>([]);
 
   const router = useRouter()
 
@@ -29,15 +34,18 @@ const Login = () => {
   return (
     <div className='w-full py-10 min-h-[85vh] bg-[#f1f1f1]'>
       <h1 className='text-4xl font-Poppins font-semibold text-black text-center'>
-        Login
+        Signup
       </h1>
       <p className='text-center text-lg font-medium py-3 text-black'>
-        Home . Login
+        Home . Signup
       </p>
       <div className='w-full flex justify-center'>
         <div className='md:w-[40%] w-[80%] p-8 bg-white shadow rounded-lg'>
           <h3 className='text-2xl font-Poppins font-semibold text-center mb-2'>Login to iCommerce</h3>
-          <p className='text-center text-lg font-medium py-3'>Don't have an account?  <Link href={'/signup'} className='text-[#759bf3] cursor-pointer'>Sign Up</Link>
+          <p className='text-center text-lg font-medium py-3'>Already have an account?
+            <Link href={'/login'} className='text-[#759bf3] cursor-pointer'>
+              Login
+            </Link>
           </p>
           <GoogleButton />
           <div className='flex items-center justify-center text-grey-400 text-sm my-5'>
@@ -47,6 +55,23 @@ const Login = () => {
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)}>
+            <label className='block text-grey-700 text-sm font-bold mb-2'>
+              Name
+            </label>
+            <input
+              type="text"
+              className='w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-200'
+              {...register('name', {
+                required: "Name is required",
+                minLength: {
+                  value: 2,
+                  message: "Name must be at least 2 characters"
+                }
+              })}
+              placeholder='Enter your name'
+            />
+            {errors.name && <p className='text-red-500 text-sm mt-1'>{errors.name.message}</p>}
+
             <label className='block text-grey-700 text-sm font-bold mb-2'>
               Email
             </label>
@@ -88,23 +113,8 @@ const Login = () => {
               {errors.password && <p className='text-red-500 text-sm mt-1'>{errors.password.message}</p>}
             </div>
 
-            <div className="flex justify-between items-center my-4">
-              <label className="flex items-center text-gray-600">
-                <input
-                  type="checkbox"
-                  className="mr-2"
-                  checked={rememberMe}
-                  onChange={() => setRememberMe(!rememberMe)}
-                />
-                Remember me
-              </label>
-              <Link href={"/forgot-password"} className="text-[#759bf3] text-sm">
-                Forgot Password?
-              </Link>
-            </div>
-
-            <button type="submit" className='w-full p-2 bg-[#759bf3] text-white rounded-md hover:bg-[#759bf3] focus:outline-none focus:ring focus:ring-blue-200'>
-              Login
+            <button type="submit" className='w-full p-2 bg-[#759bf3] text-white rounded-md hover:bg-[#759bf3] focus:outline-none focus:ring focus:ring-blue-200 mt-4'>
+              Sign Up
             </button>
 
             {serverError && <p className='text-red-500 text-sm mt-1'>{serverError}</p>}
@@ -116,4 +126,4 @@ const Login = () => {
   )
 }
 
-export default Login
+export default Signup
