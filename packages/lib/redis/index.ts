@@ -2,8 +2,8 @@
 import Redis from "ioredis";
 
 const redis = new Redis(process.env.REDIS_DATABASE_URI!, {
-  maxRetriesPerRequest: 5, // reduce retries during testing
-  connectTimeout: 5000, // 5s timeout
+  maxRetriesPerRequest: 5, 
+  connectTimeout: 5000, 
 });
 
 redis.on('connect', () => {

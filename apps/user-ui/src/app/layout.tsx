@@ -11,12 +11,12 @@ export const metadata = {
 
 const roboto = Roboto({
   subsets: ['latin'],
-  weight: ["100", "300", '400', "500", '700','900'],
+  weight: ["100", "300", '400', "500", '700', '900'],
   variable: '--font-roboto',
 })
 
 const poppins = Poppins({
-  subsets: ['latin'], 
+  subsets: ['latin'],
   weight: ["100", "200", "300", '400', "500", '600', '700', '800', '900'],
   variable: '--font-poppins',
 })
@@ -31,9 +31,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${roboto.variable} ${poppins.variable}`}>
         <Providers>
-        <Header />
+          <Header />
+          {children}
         </Providers>
-        {children}
       </body>
     </html>
   );

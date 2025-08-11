@@ -1,11 +1,13 @@
 
 'use client'
 import GoogleButton from '@/shared/components/google-button';
+import { useMutation, useMutationState } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useRef, useState } from 'react'
-import { useForm } from 'react-hook-form';
+import { set, useForm } from 'react-hook-form';
 import { VscEyeClosed, VscEye } from 'react-icons/vsc'
+import axios , { AxiosError } from 'axios'
 
 
 type FormData = {
@@ -13,6 +15,7 @@ type FormData = {
   email: string
   password: string
 };
+
 
 const Signup = () => {
 
@@ -29,8 +32,30 @@ const Signup = () => {
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>()
 
+  const startResendTimer = () => {
+    const interval = setInterval(() => {
+      setTimer((prevTimer) => prevTimer - 1);
+    }, 1000);
+    return interval;
+  };
+
+  const signupMutation = useMutation({
+  mutationFn: async (data: FormData) => {
+    const response = await axios.post(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/user-registration`, data);
+    return response.data
+  },
+  onSuccess: (_,formData)=>{
+    setUserData(formData)
+    setShowOtp(true)
+    setCanResend(false)
+    setTimer(60)
+    startResendTimer()  
+  }
+})
+
   const onSubmit = async (data: FormData) => {
     console.log(data);
+    signupMutation.mutate(data)
   }
 
   const handleOtpChange = (index: number, value: string) => {
@@ -137,7 +162,7 @@ const Signup = () => {
               </div>
 
               <button type="submit" className='w-full p-2 bg-[#759bf3] text-white rounded-md hover:bg-[#759bf3] focus:outline-none focus:ring focus:ring-blue-200 mt-4'>
-                Sign Up
+                {signupMutation.isPending ? 'Signing up...' : 'Sign Up'}
               </button>
 
               {serverError && <p className='text-red-500 text-sm mt-1'>{serverError}</p>}
