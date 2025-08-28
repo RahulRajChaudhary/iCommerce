@@ -3,7 +3,8 @@
 
 const page = () => {
   return (
-    <div className="h-[100vh]">page</div>
+    <div className="h-[200vh]">
+      Homepage</div>
   )
 }
 
