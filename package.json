@@ -27,6 +27,7 @@
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-hook-form": "^7.60.0",
+    "react-hot-toast": "^2.6.0",
     "react-icons": "^5.5.0",
     "swagger-autogen": "^2.23.7",
     "swagger-ui": "^5.26.2"

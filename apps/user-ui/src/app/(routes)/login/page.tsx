@@ -1,9 +1,11 @@
 'use client'
 import GoogleButton from '@/shared/components/google-button';
+import { useMutation } from '@tanstack/react-query';
+import axios, { AxiosError } from 'axios';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react'
-import { useForm } from 'react-hook-form';
+import { set, useForm } from 'react-hook-form';
 import { VscEyeClosed, VscEye } from 'react-icons/vsc'
 
 type FormData = {
@@ -21,15 +23,32 @@ const Login = () => {
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>()
 
   const onSubmit = async (data: FormData) => {
-    console.log(data);
+    loginMutation.mutate(data);
   }
+
+  const loginMutation = useMutation({
+    mutationFn: async (data: FormData) => {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/login-user`, data, { withCredentials: true });
+      return response.data;
+    },
+    onSuccess: () => {
+      setServerError(null);
+      router.push('/')
+    },
+    onError: (error: AxiosError) => {
+      const errorMessage =
+        (error.response?.data as { message?: string })?.message ||
+        "Invalid credentials!";
+      setServerError(errorMessage);
+    }
+  });
 
   return (
     <div className='w-full py-10 min-h-[85vh] bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center'>
       <div className='max-w-md w-full mx-4 bg-white rounded-xl shadow-lg overflow-hidden'>
         <div className='bg-gradient-to-r from-[#0066CC] to-[#0047AB] p-6 text-center'>
           <h1 className='text-3xl font-bold text-white'>Welcome Back</h1>
-          <p className='text-blue-100 mt-2'>Sign in to your iCommerce account</p>
+          <p className='text-blue-100 mt-2'>Sign in to iCommerce</p>
         </div>
         
         <div className='p-8'>
@@ -80,7 +99,7 @@ const Login = () => {
               <button
                 type="button"
                 onClick={() => setPasswordVisible(!passwordVisible)}
-                className="absolute right-3 top-[38px] text-gray-500 hover:text-gray-700"
+                className="absolute right-3 top-[50%] text-gray-500 hover:text-gray-700"
               >
                 {passwordVisible ? <VscEye size={20} /> : <VscEyeClosed size={20} />}
               </button>
@@ -104,9 +123,10 @@ const Login = () => {
 
             <button 
               type="submit" 
-              className='w-full py-3 px-4 bg-gradient-to-r from-[#0066CC] to-[#0047AB] text-white rounded-lg  font-medium hover:bg-gradient-to-r hover:from-[#0047AB] hover:to-[#0066CC] transition-colors'
+               disabled= {loginMutation.isPending}
+              className='w-full py-3 px-4 bg-gradient-to-r from-[#0066CC] to-[#0047AB] text-white rounded-lg font-medium hover:bg-gradient-to-r hover:from-[#0047AB] hover:to-[#0066CC] transition-colors'
             >
-              Sign In
+              {loginMutation.isPending ? "Logging in..." : "Login"}
             </button>
 
             {serverError && (

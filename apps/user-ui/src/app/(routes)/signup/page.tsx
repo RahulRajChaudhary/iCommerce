@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import React, { useRef, useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { VscEyeClosed, VscEye } from 'react-icons/vsc'
-import axios, { AxiosError } from 'axios'
+import axios from 'axios'
 
 type FormData = {
   name: string
@@ -16,7 +16,6 @@ type FormData = {
 
 const Signup = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const [serverError, setServerError] = useState<string | null>(null);
   const [canResend, setCanResend] = useState(true);
   const [timer, setTimer] = useState(60);
   const [showOtp, setShowOtp] = useState(false);
@@ -44,9 +43,10 @@ const Signup = () => {
 
   const verifyOtpMutation = useMutation({
     mutationFn: async () => {
-      if (!userData) return;
+      if (!userData) throw new Error("User data not available");
+      
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_SERVER_URI}/auth/api/verify-user`,
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/verify-user`,
         {
           ...userData,
           otp: otp.join(""),
@@ -56,26 +56,28 @@ const Signup = () => {
     },
     onSuccess: () => {
       router.push("/login");
-    },
+    }
   });
 
   const signupMutation = useMutation({
     mutationFn: async (data: FormData) => {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/user-registration`, data);
-      return response.data
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/user-registration`, 
+        data
+      );
+      return response.data;
     },
     onSuccess: (_, formData) => {
-      setUserData(formData)
-      setShowOtp(true)
-      setCanResend(false)
-      setTimer(60)
-      startResendTimer()
+      setUserData(formData);
+      setShowOtp(true);
+      setCanResend(false);
+      setTimer(60);
+      startResendTimer();
     }
-  })
+  });
 
   const onSubmit = async (data: FormData) => {
-    console.log(data);
-    signupMutation.mutate(data)
+    signupMutation.mutate(data);
   }
 
   const handleOtpChange = (index: number, value: string) => {
@@ -191,7 +193,7 @@ const Signup = () => {
 
                 <button 
                   type="submit" 
-                  className='w-full py-3 px-4 bg-gradient-to-r from-[#0066CC] to-[#0047AB] text-white rounded-lg  font-medium hover:bg-gradient-to-r hover:from-[#0047AB] hover:to-[#0066CC] transition-colors '
+                  className='w-full py-3 px-4 bg-gradient-to-r from-[#0066CC] to-[#0047AB] text-white rounded-lg font-medium hover:from-[#0047AB] hover:to-[#0066CC] transition-colors disabled:opacity-75'
                   disabled={signupMutation.isPending}
                 >
                   {signupMutation.isPending ? (
@@ -205,16 +207,10 @@ const Signup = () => {
                   ) : 'Create Account'}
                 </button>
 
-                {serverError && (
-                  <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded">
-                    <p className='text-red-700 text-sm'>{serverError}</p>
-                  </div>
-                )}
-
                 <div className="text-center text-sm text-gray-600 mt-6">
                   Already have an account?{' '}
-                  <Link href={'/login'} className='text-blue-600 hover:text-blue-800 font-medium'>
-                    Sign in here
+                  <Link href={'/login'} className='text-blue-600 hover:underline font-medium'>
+                    Sign in
                   </Link>
                 </div>
               </form>
@@ -246,7 +242,7 @@ const Signup = () => {
               <button 
                 onClick={() => verifyOtpMutation.mutate()} 
                 disabled={verifyOtpMutation.isPending}
-                className='w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white rounded-lg font-medium focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all shadow-md disabled:opacity-75 mb-4'
+                className='w-full py-3 px-4 bg-gradient-to-r from-[#0066CC] to-[#0047AB] text-white rounded-lg font-medium hover:from-[#0047AB] hover:to-[#0066CC] transition-colors mb-4 disabled:opacity-75'
               >
                 {verifyOtpMutation.isPending ? (
                   <span className="flex items-center justify-center">
@@ -271,14 +267,6 @@ const Signup = () => {
                   <p>Resend OTP in {timer}s</p>
                 )}
               </div>
-
-              {verifyOtpMutation?.isError && verifyOtpMutation.error instanceof AxiosError && (
-                <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded mt-4">
-                  <p className='text-red-700 text-sm'>
-                    {verifyOtpMutation.error.response?.data?.message || verifyOtpMutation.error.message}
-                  </p>
-                </div>
-              )}
             </div>
           )}
         </div>
