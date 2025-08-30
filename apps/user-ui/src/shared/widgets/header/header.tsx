@@ -1,11 +1,13 @@
-// header.tsx
+"use client"
 import Link from 'next/link'
 import React from 'react'
 import HeaderBottom from './header-bottom'
 import { CiHeart, CiSearch, CiShoppingCart } from "react-icons/ci";
 import { FiUser } from "react-icons/fi";
+import useUser from '@/hooks/useUser';
 
 const Header = () => {
+  const { user, isLoading } = useUser()
   return (
     <div className='w-full bg-gradient-to-r from-[#0066CC] to-[#0047AB] shadow-md'>
       <div className='w-[90%] max-w-7xl py-4 m-auto flex items-center justify-between'>
@@ -15,7 +17,7 @@ const Header = () => {
             <span className='text-2xl font-bold text-white'>iCommerce</span>
           </Link>
         </div>
-        
+
         {/* Search Bar */}
         <div className='w-[50%] relative'>
           <input
@@ -30,18 +32,36 @@ const Header = () => {
         {/* User Actions */}
         <div className='flex items-center gap-6'>
           <div className='flex items-center gap-2'>
-            <Link href={"/login"}
-              className='border-2 border-white/30 w-[42px] h-[42px] rounded-full flex items-center justify-center hover:bg-white/10 transition-colors'>
-              <FiUser className="text-white" />
-            </Link>
-            <div>
-              <Link href={"/login"}>
-                <span className='block font-medium text-sm text-white/80'>Hello,</span>
-                <span className='font-semibold text-white'>Sign In</span>
-              </Link>
-            </div>
+            {!isLoading && user? (
+              <>
+                <Link href={"/profile"}
+                  className='border-2 border-white/30 w-[42px] h-[42px] rounded-full flex items-center justify-center hover:bg-white/10 transition-colors'>
+                  <FiUser className="text-white" />
+                </Link>
+                <div>
+                  <Link href={"/profile"}>
+                    <span className='block font-medium text-sm text-white/80'>Hello,</span>
+                    <span className='font-semibold text-white'>{user?.name?.split(" ")[0]
+                     }</span>
+                  </Link>
+                </div>
+              </>
+            ) : (
+              <>
+                <Link href={"/login"}
+                  className='border-2 border-white/30 w-[42px] h-[42px] rounded-full flex items-center justify-center hover:bg-white/10 transition-colors'>
+                  <FiUser className="text-white" />
+                </Link>
+                <div>
+                  <Link href={"/login"}>
+                    <span className='block font-medium text-sm text-white/80'>Hello,</span>
+                    <span className='font-semibold text-white'>{isLoading ? "Loading.." : "Sign In" }</span>
+                  </Link>
+                </div>
+              </>
+            )}
           </div>
-          
+
           <div className='flex items-center gap-4'>
             <Link href={'/wishlist'}
               className='relative text-white p-2 hover:bg-white/10 rounded-full transition-colors'>

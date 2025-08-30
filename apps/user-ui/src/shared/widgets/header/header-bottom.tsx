@@ -1,6 +1,7 @@
 'use client'
 
 import { navItems } from '@/configs/constants'
+import useUser from '@/hooks/useUser'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 import { CiHeart, CiShoppingCart, CiTextAlignLeft } from 'react-icons/ci'
@@ -11,6 +12,9 @@ const HeaderBottom = () => {
   const [show, setShow] = useState(false)
   const [isSticky, setIsSticky] = useState(false)
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null)
+
+  const { user, isLoading } = useUser();
+  console.log(user);
 
   // Mock data for demonstration
   const categories = [
@@ -141,16 +145,34 @@ const HeaderBottom = () => {
           {isSticky && (
             <div className='flex items-center gap-6'>
               <div className='flex items-center gap-2'>
-                <Link href={"/login"}
-                  className='border-2 border-black/30 w-[42px] h-[42px] rounded-full flex items-center justify-center hover:bg-white/10 transition-colors'>
-                  <FiUser className="text-black hover:text-blue-600 " />
-                </Link>
-                <div>
-                  <Link href={"/login"}>
-                    <span className='block font-medium text-sm text-black hover:text-blue-600 transition-colors'>Hello,</span>
-                    <span className='font-semibold text-black hover:text-blue-600 transition-colors'>Sign In</span>
-                  </Link>
-                </div>
+                {!isLoading && user ? (
+                  <>
+                    <Link href={"/profile"}
+                      className='border-2 border-black/30 w-[42px] h-[42px] rounded-full flex items-center justify-center hover:bg-white/10 transition-colors'>
+                      <FiUser className="text-black hover:text-blue-600" />
+                    </Link>
+                    <div>
+                      <Link href={"/profile"}>
+                        <span className='block font-medium text-sm  text-black hover:text-blue-600 transition-colors'>Hello,</span>
+                        <span className='font-semibold text-black hover:text-blue-600 transition-colors'>{user?.name?.split(" ")[0]
+                        }</span>
+                      </Link>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <Link href={"/login"}
+                      className='border-2 border-grey/30 w-[42px] h-[42px] rounded-full flex items-center justify-center hover:text-blue-600 transition-colors'>
+                      <FiUser className="text-black" />
+                    </Link>
+                    <div>
+                      <Link href={"/login"}>
+                        <span className='block font-medium text-sm text-black/80'>Hello,</span>
+                        <span className='font-semibold text-black/80'>{isLoading ? "Loading.." : "Sign In"}</span>
+                      </Link>
+                    </div>
+                  </>
+                )}
               </div>
 
               <div className='flex items-center gap-4'>

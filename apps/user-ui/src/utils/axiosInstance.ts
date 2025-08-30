@@ -1,9 +1,8 @@
 
 import axios from "axios";
-import { runRedirectToLogin } from "./redirect";
 
 const axiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_SERVER_URI,
+  baseURL: process.env.NEXT_PUBLIC_SERVER_URL,
   withCredentials: true,
 });
 
@@ -12,11 +11,7 @@ let refreshSubscribers: (() => void)[] = [];
 
 // Handle logout and prevent infinite loops
 const handleLogout = () => {
-  const publicPaths = ["/login", "/signup", "/forgot-password"];
-  const currentPath = window.location.pathname;
-  if (!publicPaths.includes(currentPath)) {
-    runRedirectToLogin();
-  }
+ if(window.location.pathname !== "/login") window.location.href = "/login";
 };
 
 // Handle adding a new access token to queued requests
@@ -58,7 +53,7 @@ axiosInstance.interceptors.response.use(
 
       try {
         await axios.post(
-          `${process.env.NEXT_PUBLIC_SERVER_URI || "https://shondhane.com"}/auth/api/refresh-token`,
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/api/refresh-token`,
           {},
           { withCredentials: true }
         );
