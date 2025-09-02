@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import React, { useRef, useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { VscEyeClosed, VscEye } from 'react-icons/vsc'
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 
 type FormData = {
   name: string
@@ -44,7 +44,7 @@ const Signup = () => {
   const verifyOtpMutation = useMutation({
     mutationFn: async () => {
       if (!userData) throw new Error("User data not available");
-      
+
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/api/verify-user`,
         {
@@ -62,7 +62,7 @@ const Signup = () => {
   const signupMutation = useMutation({
     mutationFn: async (data: FormData) => {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/user-registration`, 
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/user-registration`,
         data
       );
       return response.data;
@@ -114,12 +114,12 @@ const Signup = () => {
           <h1 className='text-3xl font-bold text-white'>Create Account</h1>
           <p className='text-blue-100 mt-2'>Join iCommerce</p>
         </div>
-        
+
         <div className='p-8'>
           {!showOtp ? (
             <>
               <GoogleButton />
-              
+
               <div className='flex items-center justify-center text-gray-400 text-sm my-6'>
                 <div className='flex-1 border-t border-gray-300' />
                 <span className='px-3'>or sign up with email</span>
@@ -150,7 +150,7 @@ const Signup = () => {
                   <label className='block text-gray-700 text-sm font-medium mb-2'>
                     Email Address
                   </label>
-                  <input 
+                  <input
                     type="email"
                     className='w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all'
                     {...register('email', {
@@ -160,7 +160,7 @@ const Signup = () => {
                         message: "Invalid email address"
                       }
                     })}
-                    placeholder='Enter your email' 
+                    placeholder='Enter your email'
                   />
                   {errors.email && <p className='text-red-500 text-sm mt-1'>{errors.email.message}</p>}
                 </div>
@@ -191,8 +191,8 @@ const Signup = () => {
                   {errors.password && <p className='text-red-500 text-sm mt-1'>{errors.password.message}</p>}
                 </div>
 
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   className='w-full py-3 px-4 bg-gradient-to-r from-[#0066CC] to-[#0047AB] text-white rounded-lg font-medium hover:from-[#0047AB] hover:to-[#0066CC] transition-colors disabled:opacity-75'
                   disabled={signupMutation.isPending}
                 >
@@ -239,8 +239,8 @@ const Signup = () => {
                 ))}
               </div>
 
-              <button 
-                onClick={() => verifyOtpMutation.mutate()} 
+              <button
+                onClick={() => verifyOtpMutation.mutate()}
                 disabled={verifyOtpMutation.isPending}
                 className='w-full py-3 px-4 bg-gradient-to-r from-[#0066CC] to-[#0047AB] text-white rounded-lg font-medium hover:from-[#0047AB] hover:to-[#0066CC] transition-colors mb-4 disabled:opacity-75'
               >
@@ -267,6 +267,13 @@ const Signup = () => {
                   <p>Resend OTP in {timer}s</p>
                 )}
               </div>
+              {verifyOtpMutation?.isError &&
+                verifyOtpMutation.error instanceof AxiosError && (
+                  <p className="text-red-500 text-sm mt-2">
+                    {verifyOtpMutation.error.response?.data?.message ||
+                      verifyOtpMutation.error.message}
+                  </p>
+                )}
             </div>
           )}
         </div>

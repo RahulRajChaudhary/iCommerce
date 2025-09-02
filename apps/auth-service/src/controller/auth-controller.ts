@@ -124,47 +124,6 @@ export const loginUser = async (req: Request, res: Response, next: NextFunction)
   }
 }
 
-//referesh token
-
-// export const refreshToken = async (req: Request, res: Response, next: NextFunction) => {
-//   try {
-//     const refreshToken = req.cookies.refreshToken;
-//     console.log('Refresh token from cookies:', refreshToken);
-//     if (!refreshToken) {
-//       return new ValidationError(`Unauthorized! Please login to get access token`);
-//     }
-
-//     const decoded = jwt.verify(refreshToken, process.env.REFRESH_JWT_SECRET!) as { id: string, role: string }
-//     if (!decoded || !decoded.id ||
-//       !decoded.role) {
-//       return new JsonWebTokenError(`Unauthorized! Please login to get access token`);
-//     }
-
-//    console.log(decoded.id, decoded.role)
-//     const user = await prisma.users.findUnique({
-//       where: {
-//         id: decoded.id
-//       }
-//     });
-//     if (!user) {
-//       return next(new ValidationError(`User not found!`));
-//     }
-
-//     const newAccessToken = jwt.sign(
-//       { id: decoded.id, role: decoded.role },
-//       process.env.ACCESS_JWT_SECRET!,
-//       { expiresIn: "15m" });
-
-//     setCookies(res, "accessToken", newAccessToken);
-//     return res.status(201).json({
-//       success: true,
-//       message: "Token refreshed successfully",
-//     })
-
-//   } catch (error) {
-//     return next(error);
-//   }
-// }
 
 export const refreshToken = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -322,3 +281,122 @@ export const resetUserPassword = async (req: Request, res: Response, next: NextF
     next(error);
   }
 }  
+
+// register a new seller
+
+export const registerSeller = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    validateRegistrationData(req.body, "seller");
+    const { name, email } = req.body;
+
+    const exisitingSeller = await prisma.sellers.findUnique({
+      where: { email },
+    });
+
+    if (exisitingSeller) {
+      throw new ValidationError("Seller already exists with this email!");
+    }
+
+    await checkOtpRestriction(email, next);
+    await trackOtpRequests(email, next);
+    await sendOtp(name, email, "seller-activation-mail");
+
+    res
+      .status(200)
+      .json({ message: "OTP sent to email. Please verify your account." });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// verify seller otp
+
+export const verifySeller = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { email, otp, password, name, phone_number, country } = req.body;
+
+    if (!email || !otp || !password || !name || !phone_number || !country) {
+      return next(new ValidationError("All fields are required!"));
+    }
+
+    const existingSeller = await prisma.sellers.findUnique({
+      where: { email },
+    });
+
+    if (existingSeller)
+      return next(
+        new ValidationError("Seller already exists with this email!")
+      );
+
+    await verifyOtp(email, otp, next);
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const seller = await prisma.sellers.create({
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        country,
+        phone_number,
+      },
+    });
+
+    res
+      .status(201)
+      .json({ seller, message: "Seller registered successfully!" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// create a new shop
+
+export const createShop = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { name, bio, address, opening_hours, website, category, sellerId } =
+      req.body;
+
+    if (!name || !bio || !address || !sellerId || !opening_hours || !category) {
+      return next(new ValidationError("All fields are required!"));
+    }
+
+    const shopData: any = {
+      name,
+      bio,
+      address,
+      opening_hours,
+      category,
+      sellerId,
+    };
+
+    if (website && website.trim() !== "") {
+      shopData.website = website;
+    }
+
+    const shop = await prisma.shops.create({
+      data: shopData,
+    });
+
+    res.status(201).json({
+      success: true,
+      shop,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// create stripe connect account link
+

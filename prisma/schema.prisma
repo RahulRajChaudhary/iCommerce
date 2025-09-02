@@ -12,7 +12,9 @@ model images {
   file_id String
   url     String
   userId  String? @db.ObjectId @unique
+  shopId  String? @unique @db.ObjectId
   user    users? @relation(fields: [userId], references: [id])
+  shop   shops? @relation(fields: [shopId], references: [id])
 }
 
 model users {
@@ -23,5 +25,58 @@ model users {
   following String[] 
   avatar    images?
   createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  shopReviews shopReviews[]
 }
+
+model sellers {
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  email        String    @unique
+  phone_number String
+  country      String
+  password     String
+  stripeId     String?
+  shop         shops?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  isDeleted    Boolean   @default(false)
+  deletedAt    DateTime?
+}
+
+model shops {
+  id            String        @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  bio           String?
+  category      String
+  avatar        images?
+  coverBanner   String?
+  address       String
+  opening_hours String?
+  website       String?
+  socialLinks   Json[]
+  ratings       Float         @default(0)
+  reviews       shopReviews[]
+  sellerId      String        @unique @db.ObjectId
+  sellers       sellers       @relation(fields: [sellerId], references: [id])
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  isDeleted     Boolean       @default(false)
+  deletedAt     DateTime? 
+  images        String? @db.ObjectId
+}
+
+model shopReviews {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  user      users    @relation(fields: [userId], references: [id])
+  rating    Float
+  reviews   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  shopsId   String?  @db.ObjectId
+  shops     shops?   @relation(fields: [shopsId], references: [id])
+}
+
+
+

@@ -1,5 +1,3 @@
-// common user for user and sellers
-
 import crypto from 'crypto';
 import { ValidationError } from '../../../../packages/error-handler';
 import redis from '../../../../packages/lib/redis';
@@ -8,7 +6,6 @@ import { NextFunction, Request, Response } from 'express';
 import prisma from '../../../../packages/lib/prisma';
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
 
 export const validateRegistrationData = (
   data: any,
@@ -24,12 +21,11 @@ export const validateRegistrationData = (
   ) {
     throw new ValidationError(`Please provide all the required fields for registration`);
   }
-
+  
   if (!emailRegex.test(email)) {
     throw new ValidationError(`Please provide a valid email address`);
   }
 }
-
 
 export const checkOtpRestriction = async (email: string, next: NextFunction) => {
   if (await redis.get(`otp_lock:${email}`)) {
@@ -86,32 +82,45 @@ export const verifyOtp = async (email: string, otp: string, next: NextFunction) 
   await redis.del(`otp:${email}`, failedAttemptsKey);
 }
 
-export const handleForgotPassword = async (req: Request, res: Response, next: NextFunction, userType: "user" | "seller") => {
+export const handleForgotPassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+  userType: "user" | "seller"
+) => {
   try {
     const { email } = req.body;
-    if (!email) {
-      throw new ValidationError(`Please provide a valid email address`);
-    }
 
-    // finding user
+    if (!email) throw new ValidationError("Email is required!");
 
-    const user = userType === "user" && await prisma.users.findUnique({
-      where: {
-        email
-      }
-    }); 
-    if(!user){
-      throw new ValidationError(`User not found!`);
-    }
+    // Find user/seller in DB
+    const user =
+      userType === "user"
+        ? await prisma.users.findUnique({ where: { email } })
+        : await prisma.sellers.findUnique({ where: { email } });
+
+    if (!user) throw new ValidationError(`${userType} not found!`);
+
+    // Check otp restrictions
     await checkOtpRestriction(email, next);
-    await trackOtpRequests(email, next)
-    await sendOtp(user.name!, email, "user-forgot-password-mail");
-    res.status(200).json({ message: "Otp sent successfully on email" });
+    await trackOtpRequests(email, next);
 
+    // Generate OTP and send Email
+    await sendOtp(
+      user.name,
+      email,
+      userType === "user"
+        ? "user-forgot-password-mail"
+        : "seller-forgot-password-mail"
+    );
+
+    res
+      .status(200)
+      .json({ message: "OTP sent to email. Please verify your account." });
   } catch (error) {
-    return next(error);
+    next(error);
   }
-}
+};
 
 export const verifyForgotPasswordOtp = async(
   req: Request,
