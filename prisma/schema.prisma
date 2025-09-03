@@ -37,6 +37,8 @@ model sellers {
   country      String
   password     String
   stripeId     String?
+  razorpayId   String?   // Add Razorpay account ID
+  razorpayAccountDetails Json? // Store additional Razorpay account
   shop         shops?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt

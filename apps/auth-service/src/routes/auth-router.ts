@@ -1,7 +1,10 @@
 
 import express, { Router } from "express";
-import { createShop, getUser, loginUser, refreshToken, registerSeller, resetUserPassword, userForgotPassword, userRegistration, verifyForgotPassword, verifySeller, verifyUser } from "../controller/auth-controller";
+import { createShop, getSeller, getUser, loginSeller, loginUser, refreshToken, registerSeller, resetUserPassword, userForgotPassword, userRegistration, verifyForgotPassword, verifySeller, verifyUser } from "../controller/auth-controller";
+import { addStripeAccountId, createStripeConnectLink } from "../controller/auth-controller";
 import isAuthenticated from "../../../../packages/middleware/isAuthenticated";
+import { isSeller } from "../../../../packages/middleware/authorize";
+
 
 const router: Router = express.Router();
 
@@ -16,5 +19,11 @@ router.post('/verify-forgot-password-user', verifyForgotPassword);
 router.post('/seller-registration', registerSeller);
 router.post('/verify-seller', verifySeller);
 router.post('/create-shop',createShop);
+router.post('/create-stripe-link', createStripeConnectLink);
+router.post('/login-seller', loginSeller)
+router.get('/logged-in-seller', isAuthenticated, isSeller, getSeller);
+// router.post('/create-razorpay-account', createRazorpayAccount);
+// router.post('/create-razorpay-transfer', createRazorpayTransfer);
 
+router.post('/add-stripe-account', addStripeAccountId);
 export default router;
