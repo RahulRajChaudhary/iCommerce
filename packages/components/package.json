@@ -1,0 +1,28 @@
+{
+  "name": "@eshop/components",
+  "version": "1.0.0",
+  "description": "Shared React components for eshop",
+  "main": "index.ts",
+  "exports": {
+    "./color-selector": "./color-selector/index.tsx",
+    "./custom-properties": "./custom-properties/index.tsx",
+    "./custom-specifications": "./custom-specifications/index.tsx",
+    "./input": "./input/index.tsx",
+    "./rich-text-editor": "./rich-text-editor/index.tsx",
+    "./size-selector": "./size-selector/index.tsx"
+  },
+  "dependencies": {
+    "react": "19.0.0",
+    "react-hook-form": "^7.60.0",
+    "lucide-react": "^0.525.0",
+    "react-quill-new": "^3.4.6"
+  },
+  "peerDependencies": {
+    "react": ">=19.0.0",
+    "react-dom": ">=19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "19.0.0",
+    "typescript": "^5.0.0"
+  }
+}
