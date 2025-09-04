@@ -6,7 +6,7 @@ import { checkOtpRestriction, handleForgotPassword, sendOtp, trackOtpRequests, v
 import { AuthError, ValidationError } from "../../../../packages/error-handler";
 import prisma from "../../../../packages/lib/prisma";
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import jwt, { JsonWebTokenError } from 'jsonwebtoken';
 import { setCookies } from "../utils/cookies";
 // import Razorpay from 'razorpay';
 
@@ -130,82 +130,64 @@ export const loginUser = async (req: Request, res: Response, next: NextFunction)
 }
 
 
-export const refreshToken = async (req: Request, res: Response, next: NextFunction) => {
+export const refreshToken = async (
+  req: any,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    const refreshToken = req.cookies.refreshToken;
-    console.log('Refresh token from cookies:', refreshToken);
+    const refreshToken =
+      req.cookies["refreshToken"] ||
+      req.cookies["seller-refresh-token"] ||
+      req.headers.authorization?.split(" ")[1];
 
     if (!refreshToken) {
-      // Send a proper response instead of returning an error object
-      return res.status(401).json({
-        success: false,
-        message: "Unauthorized! Please login to get access token"
-      });
+      return next(new ValidationError("Unauthorized! No refresh token."));
     }
 
-    const decoded = jwt.verify(refreshToken, process.env.REFRESH_JWT_SECRET!) as {
-      id: string,
-      role: string
-    };
+    const decoded = jwt.verify(
+      refreshToken,
+      process.env.REFRESH_JWT_SECRET as string
+    ) as { id: string; role: string };
 
     if (!decoded || !decoded.id || !decoded.role) {
-      // Send a proper response instead of returning an error object
-      return res.status(401).json({
-        success: false,
-        message: "Unauthorized! Invalid refresh token"
+      return next(new JsonWebTokenError("Forbidden! Invalid refresh token."));
+    }
+
+    let account;
+    if (decoded.role === "user" || decoded.role === "admin") {
+      account = await prisma.users.findUnique({ where: { id: decoded.id } });
+    } else if (decoded.role === "seller") {
+      account = await prisma.sellers.findUnique({
+        where: { id: decoded.id },
+        include: { shop: true },
       });
     }
 
-    console.log(decoded.id, decoded.role);
-
-    const user = await prisma.users.findUnique({
-      where: {
-        id: decoded.id
-      }
-    });
-
-    if (!user) {
-      // Send a proper response instead of using next()
-      return res.status(404).json({
-        success: false,
-        message: "User not found!"
-      });
+    if (!account) {
+      return next(new AuthError("Forbidden! User/Seller not found"));
     }
 
     const newAccessToken = jwt.sign(
       { id: decoded.id, role: decoded.role },
-      process.env.ACCESS_JWT_SECRET!,
+      process.env.ACCESS_TOKEN_SECRET as string,
       { expiresIn: "15m" }
     );
 
-    setCookies(res, "accessToken", newAccessToken);
+    if (decoded.role === "user" || decoded.role === "admin") {
+      setCookies(res, "accessToken", newAccessToken);
+    } else if (decoded.role === "seller") {
+      setCookies(res, "seller-access-token", newAccessToken);
+    }
 
-    return res.status(200).json({
-      success: true,
-      message: "Token refreshed successfully",
-    });
+    req.role = decoded.role;
 
+    return res.status(201).json({ success: true });
   } catch (error) {
-    console.log('Refresh token error:', error);
-
-    if (error instanceof jwt.TokenExpiredError) {
-      return res.status(401).json({
-        success: false,
-        message: "Refresh token expired"
-      });
-    }
-
-    if (error instanceof jwt.JsonWebTokenError) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid refresh token"
-      });
-    }
-
-    // For other errors, pass to the error handler
-    return next(error);
+    next(error);
   }
 };
+
 
 
 
