@@ -15,6 +15,9 @@ model images {
   shopId  String? @unique @db.ObjectId
   user    users? @relation(fields: [userId], references: [id])
   shop   shops? @relation(fields: [shopId], references: [id])
+  productsId String?   @db.ObjectId
+  products   products? @relation(fields: [productsId], references: [id])
+
 }
 
 model users {
@@ -65,6 +68,7 @@ model shops {
   updatedAt     DateTime      @updatedAt
   isDeleted     Boolean       @default(false)
   deletedAt     DateTime? 
+   products      products[]
   images        String? @db.ObjectId
 }
 
@@ -88,6 +92,56 @@ model site_config {
   banner        String?
 }
 
+model discount_codes {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  public_name   String
+  discountType  String
+  discountValue Float
+  discountCode  String   @unique
+  sellerId      String   @db.ObjectId
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
 
 
+enum productStatus {
+  Active
+  Pending
+  Draft
+}
+
+model products {
+  id                    String        @id @default(auto()) @map("_id") @db.ObjectId
+  title                 String
+  slug                  String        @unique
+  category              String
+  subCategory           String
+  short_description     String
+  detailed_description  String
+  images                images[]
+  video_url             String?
+  tags                  String[]
+  brand                 String?
+  colors                String[]
+  sizes                 String[]
+  starting_date         DateTime?
+  ending_date           DateTime?
+  stock                 Int
+  sale_price            Float
+  regular_price         Float
+  ratings               Float         @default(5)
+  warranty              String?
+  custom_specifications Json?
+  custom_properties     Json
+  isDeleted             Boolean?      @default(false)
+  cashOnDelivery        String?
+  discount_codes        String[]      @db.ObjectId
+  status                productStatus @default(Active)
+  totalSales            Int           @default(0)
+  deletedAt             DateTime?
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+  shopId                String        @db.ObjectId
+  Shop                  shops         @relation(fields: [shopId], references: [id])
+}
 
