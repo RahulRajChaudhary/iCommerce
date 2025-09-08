@@ -31,6 +31,7 @@
     "morgan": "^1.10.0",
     "motion": "^12.23.12",
     "next": "~15.1.4",
+    "node-cron": "^4.2.1",
     "nodemailer": "^7.0.5",
     "razorpay": "^2.9.6",
     "react": "18.3.1",
