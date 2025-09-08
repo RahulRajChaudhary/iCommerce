@@ -5,8 +5,10 @@ import cookieParser from 'cookie-parser';
 import router from './routes/product-routes';
 
 
-const app = express();
-app.use(express.json());
+
+const app: express.Application = express();
+app.use(express.json({ limit: "50mb" })); // Reduced from 100mb for security
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use(cookieParser())
 
 app.use(cors({
