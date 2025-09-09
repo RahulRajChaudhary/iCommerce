@@ -5,9 +5,12 @@ import HeaderBottom from './header-bottom'
 import { CiHeart, CiSearch, CiShoppingCart } from "react-icons/ci";
 import { FiUser } from "react-icons/fi";
 import useUser from '@/hooks/useUser';
+import { useStore } from '@/store';
 
 const Header = () => {
   const { user, isLoading } = useUser()
+  const wishlist = useStore((state: any) => state.wishlist);
+  const cart = useStore((state: any) => state.cart);
   return (
     <div className='w-full bg-gradient-to-r from-[#0066CC] to-[#0047AB] shadow-md'>
       <div className='w-[90%] max-w-7xl py-4 m-auto flex items-center justify-between'>
@@ -67,14 +70,14 @@ const Header = () => {
               className='relative text-white p-2 hover:bg-white/10 rounded-full transition-colors'>
               <CiHeart size={26} />
               <div className='w-5 h-5 bg-red-500 rounded-full flex items-center justify-center absolute top-0 right-0'>
-                <span className='text-white font-medium text-xs'>0</span>
+                <span className='text-white font-medium text-xs'>{wishlist.length}</span>
               </div>
             </Link>
             <Link href={'/cart'}
               className='relative text-white p-2 hover:bg-white/10 rounded-full transition-colors'>
               <CiShoppingCart size={26} />
               <div className='w-5 h-5 bg-red-500 rounded-full flex items-center justify-center absolute top-0 right-0'>
-                <span className='text-white font-medium text-xs'>9+</span>
+                <span className='text-white font-medium text-xs'>{cart.length}</span>
               </div>
             </Link>
           </div>

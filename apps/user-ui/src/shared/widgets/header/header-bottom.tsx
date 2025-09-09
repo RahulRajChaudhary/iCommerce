@@ -2,6 +2,7 @@
 
 import { navItems } from '@/configs/constants'
 import useUser from '@/hooks/useUser'
+import { useStore } from '@/store'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 import { CiHeart, CiShoppingCart, CiTextAlignLeft } from 'react-icons/ci'
@@ -14,6 +15,8 @@ const HeaderBottom = () => {
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null)
 
   const { user, isLoading } = useUser();
+  const wishlist = useStore((state: any) => state.wishlist);
+  const cart = useStore((state: any) => state.cart);
   console.log(user);
 
   // Mock data for demonstration
@@ -180,14 +183,14 @@ const HeaderBottom = () => {
                   className='relative text-black p-2 hover:text-blue-600 transition-colors rounded-full'>
                   <CiHeart size={26} />
                   <div className='w-5 h-5 bg-red-500 rounded-full flex items-center justify-center absolute top-0 right-0'>
-                    <span className='text-white font-medium text-xs'>0</span>
+                    <span className='text-white font-medium text-xs'>{wishlist.length}</span>
                   </div>
                 </Link>
                 <Link href={'/cart'}
                   className='relative text-black p-2 hover:text-blue-600 transition-colors rounded-full'>
                   <CiShoppingCart size={26} />
                   <div className='w-5 h-5 bg-red-500 rounded-full flex items-center justify-center absolute top-0 right-0'>
-                    <span className='text-white font-medium text-xs'>9+</span>
+                    <span className='text-white font-medium text-xs'>{cart.length}</span>
                   </div>
                 </Link>
               </div>
