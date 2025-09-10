@@ -42,7 +42,7 @@ setInterval(processQueue, 3000); // 3000 ms = 3s to start processing
 export const consumeKafkaMessages = async () => {
   // connect to the kafka broker
   await consumer.connect();
-  await consumer.subscribe({ topic: "users-events", fromBeginning: false });
+  await consumer.subscribe({ topic: "users-events", fromBeginning: true });
 
   await consumer.run({
     eachMessage: async ({ message }) => {

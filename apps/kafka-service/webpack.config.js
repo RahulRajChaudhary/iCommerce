@@ -1,9 +1,15 @@
 const { NxAppWebpackPlugin } = require('@nx/webpack/app-plugin');
-const { join } = require('path');
+const { join, resolve } = require('path');
 
 module.exports = {
   output: {
     path: join(__dirname, 'dist'),
+  },
+  resolve: {
+    alias: {
+      '@kafka-service': resolve(__dirname, '../../packages'),
+    },
+    extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
   },
   plugins: [
     new NxAppWebpackPlugin({
