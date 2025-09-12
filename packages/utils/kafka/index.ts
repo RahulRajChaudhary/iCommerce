@@ -1,16 +1,16 @@
 
-import {Kafka}  from "kafkajs";
+import "dotenv/config";
+import { Kafka } from "kafkajs";
 
 export const kafka = new Kafka({
   clientId: "kafka-service",
-  brokers:
-    [
-     'pkc-619z3.us-east1.gcp.confluent.cloud:9092'
-    ],
+  brokers: ["pkc-619z3.us-east1.gcp.confluent.cloud:9092"],
   ssl: true,
-  sasl : {
-    mechanism: "plain",
-    username: process.env.KAFKA_API_KEY!,
-    password: process.env.KAFKA_API_SECRET!,
+  sasl: {
+    mechanism: "plain", 
+    username: process.env.KAFKA_API_KEY!,   
+    password: process.env.KAFKA_API_SECRET!, 
   },
+  connectionTimeout: 30000, // 30s instead of 1s
+  requestTimeout: 30000,
 });
