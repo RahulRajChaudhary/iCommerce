@@ -1,4 +1,6 @@
+
 "use client";
+
 import { useQuery } from "@tanstack/react-query";
 import ProductCard from "@/shared/components/cards/product-card";
 import axiosInstance from "@/utils/axiosInstance";
@@ -6,7 +8,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { Range } from "react-range";
-import { FiFilter, FiX, FiChevronDown, FiChevronUp } from "react-icons/fi";
+import { FiFilter, FiX, FiChevronDown, FiChevronUp, FiTag } from "react-icons/fi";
 
 const MIN = 0;
 const MAX = 1199;
@@ -63,7 +65,7 @@ const Page = () => {
       params.set("colors", selectedColors.join(","));
     if (selectedSizes.length > 0) params.set("sizes", selectedSizes.join(","));
     params.set("page", page.toString());
-    router.replace(`/products?${decodeURIComponent(params.toString())}`);
+    router.replace(`/offers?${decodeURIComponent(params.toString())}`);
   };
 
   const fetchFilteredProducts = async () => {
@@ -82,12 +84,12 @@ const Page = () => {
       query.set("limit", "12");
 
       const res = await axiosInstance.get(
-        `/product/api/get-filtered-products?${query.toString()}`
+        `/product/api/get-filtered-offers?${query.toString()}`
       );
       setProducts(res.data.products);
       setTotalPages(res.data.pagination.totalPages);
     } catch (error) {
-      console.error("Failed to fetch filtered products", error);
+      console.error("Failed to fetch filtered offers", error);
     } finally {
       setIsProductLoading(false);
     }
@@ -244,15 +246,20 @@ const Page = () => {
       <div className="w-[90%] lg:w-[85%] m-auto">
         {/* Breadcrumb and title */}
         <div className="py-6 md:py-8">
-          <h1 className="font-semibold text-3xl md:text-4xl lg:text-[44px] mb-3 font-jost">
-            All Products
-          </h1>
+          <div className="flex items-center gap-3 mb-3">
+            <div className="bg-blue-100 p-2 rounded-full">
+              <FiTag className="text-blue-600 text-xl" />
+            </div>
+            <h1 className="font-semibold text-3xl md:text-4xl lg:text-[44px] font-jost">
+              Special Offers
+            </h1>
+          </div>
           <div className="flex items-center text-sm text-[#55585b]">
             <Link href="/" className="hover:underline hover:text-blue-600 transition-colors">
               Home
             </Link>
             <span className="inline-block w-1 h-1 mx-2 bg-[#a8acb0] rounded-full"></span>
-            <span>All Products</span>
+            <span>Special Offers</span>
           </div>
         </div>
 
@@ -558,7 +565,7 @@ const Page = () => {
             {/* Results count and sort (placeholder) */}
             <div className="flex justify-between items-center mb-6">
               <p className="text-gray-600 text-sm">
-                Showing {products.length} of {products.length * totalPages} products
+                Showing {products.length} of {products.length * totalPages} offers
               </p>
               <div className="relative w-40 z-10">
                 <select className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
@@ -587,7 +594,7 @@ const Page = () => {
             ) : products.length > 0 ? (
               <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 md:gap-6">
                 {products.map((product) => (
-                  <ProductCard key={product.id} product={product} />
+                  <ProductCard key={product.id} product={product}  />
                 ))}
               </div>
             ) : (
@@ -595,7 +602,7 @@ const Page = () => {
                 <div className="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
                   <FiX size={40} className="text-gray-400" />
                 </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No products found</h3>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No offers found</h3>
                 <p className="text-gray-500 mb-6">Try adjusting your search filters to find what you're looking for.</p>
                 <button 
                   onClick={clearAllFilters}

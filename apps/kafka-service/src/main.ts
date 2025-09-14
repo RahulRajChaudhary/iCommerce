@@ -39,13 +39,13 @@ const processQueue = async () => {
 setInterval(processQueue, 3000); // 3000 ms = 3s to start processing
 
 // Add this before creating the consumer
-console.log('Kafka configuration:', {
-  brokers: ["pkc-619z3.us-east1.gcp.confluent.cloud:9092"],
-  hasApiKey: !!process.env.KAFKA_API_KEY,
-  hasApiSecret: !!process.env.KAFKA_API_SECRET,
-  apiKeyLength: process.env.KAFKA_API_KEY?.length,
-  apiSecretLength: process.env.KAFKA_API_SECRET?.length
-});
+// console.log('Kafka configuration:', {
+//   brokers: ["pkc-619z3.us-east1.gcp.confluent.cloud:9092"],
+//   hasApiKey: !!process.env.KAFKA_API_KEY,
+//   hasApiSecret: !!process.env.KAFKA_API_SECRET,
+//   apiKeyLength: process.env.KAFKA_API_KEY?.length,
+//   apiSecretLength: process.env.KAFKA_API_SECRET?.length
+// });
 
 // kafka consumer for user events
 export const consumeKafkaMessages = async () => {
