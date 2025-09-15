@@ -138,12 +138,12 @@ const ProductDetails = ({ productDetails }: { productDetails: any }) => {
                   isFluidWidth: true,
                   src:
                     currentImage ||
-                    "https://ik.imagekit.io/fz0xzwtey/products/product-1741207782553-0_-RWfpGzfHt.jpg",
+                    "https://ik.imagekit.io/mu0woh4fs/hero-section.png?updatedAt=1757339713543",
                 },
                 largeImage: {
                   src:
                     currentImage ||
-                    "https://ik.imagekit.io/fz0xzwtey/products/product-1741207782553-0_-RWfpGzfHt.jpg",
+                    "https://ik.imagekit.io/mu0woh4fs/hero-section.png?updatedAt=1757339713543",
                   width: 1200,
                   height: 1200,
                 },
@@ -176,7 +176,7 @@ const ProductDetails = ({ productDetails }: { productDetails: any }) => {
                   key={index}
                   src={
                     img?.url ||
-                    "https://ik.imagekit.io/fz0xzwtey/products/product-1741207782553-0_-RWfpGzfHt.jpg"
+                    "https://ik.imagekit.io/mu0woh4fs/hero-section.png?updatedAt=1757339713543"
                   }
                   alt="Thumbnail"
                   width={60}
