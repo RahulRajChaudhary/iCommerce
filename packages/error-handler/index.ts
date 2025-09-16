@@ -39,11 +39,13 @@ export class AuthError extends AppError{
 
 // Restricted area or page error
 
-export class ForbiddenErrror extends AppError{
-  constructor(message: "Not allow") {
-    super(message, 403)
+export class ForbiddenError extends AppError {
+  constructor(message = "Not allowed") {
+    super(message, 403);
   }
 }
+
+
 // db error
 
 export class DatabaseError extends AppError{
