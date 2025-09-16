@@ -1,11 +1,11 @@
 "use client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import useRequireAuth from "@/hooks/useRequiredAuth";
-import QuickActionCard from "apps/user-ui/src/shared/components/cards/quick-action.card";
-import StatCard from "apps/user-ui/src/shared/components/cards/stat.card";
-import ChangePassword from "apps/user-ui/src/shared/components/change-password";
-import ShippingAddressSection from "apps/user-ui/src/shared/components/shippingAddress";
-import OrdersTable from "apps/user-ui/src/shared/components/tables/orders-table";
+import QuickActionCard from "@/shared/components/cards/quick-action-card";
+import StatCard from "@/shared/components/cards/stats-card";
+import ChangePassword from "@/shared/components/change-password";
+import ShippingAddressSection from "@/shared/components/shippingAddress";
+import OrdersTable from "@/shared/components/tables/order-tables";
 import axiosInstance from "@/utils/axiosInstance";
 import {
   BadgeCheck,
@@ -66,7 +66,7 @@ const Page = () => {
   }, [activeTab]);
 
   const logOutHandler = async () => {
-    await axiosInstance.get("/auth/api/logout-user").then((res) => {
+    await axiosInstance.get("/api/logout-user").then((res) => {
       queryClient.invalidateQueries({ queryKey: ["user"] });
 
       router.push("/login");
@@ -181,7 +181,7 @@ const Page = () => {
                   <Image
                     src={
                       user?.avatar ||
-                      "https://ik.imagekit.io/fz0xzwtey/avatar/6_N7eMmuAvl.png?updatedAt=1742269698784"
+                      "https://ik.imagekit.io/mu0woh4fs/iCommerce%20Cartoon%20Profile.jpg?updatedAt=1757917555256"
                     }
                     alt="profile"
                     width={60}

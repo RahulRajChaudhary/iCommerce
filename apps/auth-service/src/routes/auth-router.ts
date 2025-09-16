@@ -1,6 +1,6 @@
 
 import express, { Router } from "express";
-import { createShop, getSeller, getUser, loginSeller, loginUser, refreshToken, registerSeller, resetUserPassword, userForgotPassword, userRegistration, verifyForgotPassword, verifySeller, verifyUser } from "../controller/auth-controller";
+import { addUserAddress, createShop, deleteUserAddress, getSeller, getUser, getUserAddresses, loginSeller, loginUser, refreshToken, registerSeller, resetUserPassword, updateUserPassword, userForgotPassword, userRegistration, verifyForgotPassword, verifySeller, verifyUser } from "../controller/auth-controller";
 import { addStripeAccountId, createStripeConnectLink } from "../controller/auth-controller";
 import isAuthenticated from "../../../../packages/middleware/isAuthenticated";
 import { isSeller } from "../../../../packages/middleware/authorizeRole";
@@ -24,6 +24,11 @@ router.post('/login-seller', loginSeller)
 router.get('/logged-in-seller', isAuthenticated, isSeller, getSeller);
 // router.post('/create-razorpay-account', createRazorpayAccount);
 // router.post('/create-razorpay-transfer', createRazorpayTransfer);
-
 router.post('/add-stripe-account', addStripeAccountId);
+
+router.post("/change-password", isAuthenticated, updateUserPassword);
+router.get("/shipping-addresses", isAuthenticated, getUserAddresses);
+router.post("/add-address", isAuthenticated, addUserAddress);
+router.delete("/delete-address/:addressId", isAuthenticated, deleteUserAddress);
+
 export default router;

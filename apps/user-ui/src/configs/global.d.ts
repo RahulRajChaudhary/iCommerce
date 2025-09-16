@@ -1,5 +1,5 @@
 
-type  navItems = {
-  name: string;
+type  navItemsTypes = {
+  title: string;
   href: string;
 }

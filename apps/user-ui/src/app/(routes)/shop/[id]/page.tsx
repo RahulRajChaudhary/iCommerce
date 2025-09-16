@@ -18,15 +18,15 @@ export async function generateMetadata({
   const data = await fetchSellerDetails(id);
 
   return {
-    title: `${data?.shop?.name} | Eshop Marketplace`,
+    title: `${data?.shop?.name} | iCommerce Marketplace`,
     description:
       data?.shop?.bio ||
-      "Explore products and services from trusted sellers on Eshop.",
+      "Explore products and services from trusted sellers on iCommerce.",
     openGraph: {
-      title: `${data?.shop?.name} | Eshop Marketplace`,
+      title: `${data?.shop?.name} | iCommerce Marketplace`,
       description:
         data?.shop?.bio ||
-        "Explore products and services from trusted sellers on Eshop.",
+        "Explore products and services from trusted sellers on iCommerce.",
       type: "website",
       images: [
         {
@@ -39,10 +39,10 @@ export async function generateMetadata({
     },
     twitter: {
       card: "summary_large_image",
-      title: `${data?.shop?.name} | Eshop Marketplace`,
+      title: `${data?.shop?.name} | iCommerce Marketplace`,
       description:
         data?.shop?.bio ||
-        "Explore products and services from trusted sellers on Eshop.",
+        "Explore products and services from trusted sellers on iCommerce.",
       images: [data?.shop?.avatar || "/default-shop.png"],
     },
   };

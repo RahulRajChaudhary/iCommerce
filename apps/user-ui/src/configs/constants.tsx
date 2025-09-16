@@ -1,23 +1,22 @@
-
-export const navItems : navItems[] = [
+export const navItems: navItemsTypes[] = [
   {
-    name: "Home",
+    title: "Home",
     href: "/",
   },
   {
-    name: "Products",
+    title: "Products",
     href: "/products",
   },
   {
-    name: "Shops",
+    title: "Shops",
     href: "/shops",
   },
   {
-    name: "Offers",
+    title: "Offers",
     href: "/offers",
   },
   {
-    name: "Become a Seller",
-    href: "/become-seller",
-  }
+    title: "Become A Seller",
+    href: `${process.env.NEXT_PUBLIC_SELLER_SERVER_URI}` ,
+  },
 ];
